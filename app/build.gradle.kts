@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -36,11 +37,11 @@ android {
     }
     buildFeatures {
         compose = true
+        aidl = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.gson)
     implementation(libs.androidx.lifecycle.runtime.ktx)

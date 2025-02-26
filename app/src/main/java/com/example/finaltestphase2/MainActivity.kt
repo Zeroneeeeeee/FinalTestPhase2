@@ -3,7 +3,6 @@ package com.example.finaltestphase2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,19 +24,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.finaltestphase2.database.DatabaseHelper
-import com.example.finaltestphase2.model.Student
-import com.example.finaltestphase2.ui.theme.FinalTestPhase2Theme
+import com.example.finaltestphase2.common.Student
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Load JSON và chèn dữ liệu vào database khi app chạy
-        JsonUtils.parseJsonAndInsertToDB(this)
+        JsonConverter.parseJsonAndInsertToDB(this)
 
         setContent {
             val students = remember { mutableStateOf(listOf<Student>()) }
@@ -46,15 +42,15 @@ class MainActivity : ComponentActivity() {
 
             StudentListScreen(
                 students.value,
-                onLimitChange = { limit -> students.value = dbHelper.getStudentsLimit(limit) },
-                onTop10Click = { students.value = dbHelper.getTop10StudentsByScore() }
+                onLimitChange = { students.value = dbHelper.get100Students() },
+                onTop10Click = { city -> students.value = dbHelper.getTop10StudentsByScoreA(city) }
             )
         }
     }
 }
 
 @Composable
-fun StudentListScreen(students: List<Student>, onLimitChange: (Int) -> Unit,onTop10Click: () -> Unit) {
+fun StudentListScreen(students: List<Student>, onLimitChange: () -> Unit,onTop10Click: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,13 +64,13 @@ fun StudentListScreen(students: List<Student>, onLimitChange: (Int) -> Unit,onTo
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Button(onClick = { onLimitChange(100) }) {
+            Button(onClick = { onLimitChange() }) {
                 Text("Hiển thị 100 học sinh")
             }
-            Button(onClick = { onTop10Click() }) {
+            Button(onClick = { onTop10Click("Hai Phong") }) {
                 Text("10 học sinh có điểm SUM khối A cao nhất")
             }
-            Button(onClick = { onLimitChange(20) }) {
+            Button(onClick = { onLimitChange() }) {
                 Text("Hiển thị 20 học sinh")
             }
         }

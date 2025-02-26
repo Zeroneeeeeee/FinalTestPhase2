@@ -1,14 +1,13 @@
 package com.example.finaltestphase2
 
 import android.content.Context
-import com.example.finaltestphase2.DateConverter.stringToDate
 import com.example.finaltestphase2.database.DatabaseHelper
-import com.example.finaltestphase2.model.Student
-import com.example.finaltestphase2.model.Subjects
+import com.example.finaltestphase2.common.Student
+import com.example.finaltestphase2.common.Subjects
 import org.json.JSONArray
 import java.io.IOException
 
-object JsonUtils {
+object JsonConverter {
     fun loadJsonFromAsset(context: Context, fileName: String): String? {
         return try {
             val inputStream = context.assets.open(fileName)
@@ -52,7 +51,7 @@ object JsonUtils {
                         subjectsList.add(Subjects(studentID, subjectName, subjectScore))
                     }
 
-                    val student = Student(studentID, firstName, lastName, dateOfBirth, city, phone, subjectsList.toTypedArray())
+                    val student = Student(studentID, firstName, lastName, dateOfBirth, city, phone, subjectsList)
                     dbHelper.insertStudent(student)
                 }
             }
