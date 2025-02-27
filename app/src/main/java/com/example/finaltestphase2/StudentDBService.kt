@@ -16,7 +16,7 @@ class StudentDBService: Service() {
     // Cung cấp giao diện AIDL cho Activity
     private val binder = object :IStudentDB.Stub(){
 
-        override fun get100Students(): MutableList<Student> {
+        override fun get100Students(limit:Int,offset:Int): MutableList<Student> {
             return database.get100Students().toMutableList()
         }
 

@@ -112,10 +112,10 @@ class DatabaseHelper(context: Context) :
         return subjects
     }
 
-    fun get100Students(): List<Student> {
+    fun get100Students(limit: Int = 100, offset: Int = 0): List<Student> {
         val students = mutableListOf<Student>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM Student LIMIT 100", null)
+        val cursor = db.rawQuery("SELECT * FROM Student LIMIT ? OFFSET ?", arrayOf(limit.toString(), offset.toString()))
 
         if (cursor.moveToFirst()) {
             do {
