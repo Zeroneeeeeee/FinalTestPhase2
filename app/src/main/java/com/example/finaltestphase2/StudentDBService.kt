@@ -32,6 +32,14 @@ class StudentDBService: Service() {
             return database.getTop10StudentsByScoreB(city).toMutableList()
         }
 
+        override fun searchStudent(name:String,city: String): MutableList<Student>{
+            return database.searchStudent(name,city).toMutableList()
+        }
+
+        override fun getStudentByID(id: Int): Student {
+            return database.getStudentByID(id)
+        }
+
     }
     override fun onBind(p0: Intent?): IBinder {
         Log.d("Binder","Bind success")

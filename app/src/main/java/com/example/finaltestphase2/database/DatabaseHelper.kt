@@ -1,5 +1,6 @@
 package com.example.finaltestphase2.database
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -112,6 +113,37 @@ class DatabaseHelper(context: Context) :
         return subjects
     }
 
+    @SuppressLint("Recycle")
+    fun getStudentByID(id:Int):Student{
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM Student s WHERE s.studentId = ?", arrayOf(id.toString()))
+
+        val student = if (cursor.moveToFirst()) {
+            Student(
+                studentId = cursor.getInt(cursor.getColumnIndexOrThrow("studentID")),
+                firstName = cursor.getString(cursor.getColumnIndexOrThrow("firstName")),
+                lastName = cursor.getString(cursor.getColumnIndexOrThrow("lastName")),
+                dateOfBirth = cursor.getString(cursor.getColumnIndexOrThrow("dateOfBirth")),
+                city = cursor.getString(cursor.getColumnIndexOrThrow("city")),
+                phone = cursor.getString(cursor.getColumnIndexOrThrow("phone")),
+                subjects = getSubjectsByStudentID(studentID = id)
+            )
+        } else {
+            Student(  // Giá trị mặc định nếu không tìm thấy học sinh
+                studentId = -1,
+                firstName = "Unknown",
+                lastName = "Student",
+                dateOfBirth = "N/A",
+                city = "Unknown",
+                phone = "0000000000",
+                subjects = emptyList()
+            )
+        }
+
+        cursor.close()
+        return student
+    }
+
     fun get100Students(limit: Int = 100, offset: Int = 0): List<Student> {
         val students = mutableListOf<Student>()
         val db = readableDatabase
@@ -204,6 +236,12 @@ class DatabaseHelper(context: Context) :
 
         val cursor = db.rawQuery(query, arrayOf(city))
         while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STUDENT_ID))
+            val subjectName = "SumA"
+            val totalScore = cursor.getInt(cursor.getColumnIndexOrThrow("totalScore"))
+
+            // Giả sử mỗi sinh viên chỉ có một môn học với điểm số cao nhất
+            val subjects = listOf(Subjects(id, subjectName, totalScore))
             val student = Student(
                 studentId = cursor.getInt(0),
                 firstName = cursor.getString(1),
@@ -211,7 +249,7 @@ class DatabaseHelper(context: Context) :
                 dateOfBirth = cursor.getString(3),
                 city = cursor.getString(4),
                 phone = cursor.getString(5),
-                subjects = getSubjectsByStudentID(cursor.getInt(0)) // Lấy danh sách môn học của học sinh
+                subjects = subjects // Lấy danh sách môn học của học sinh
             )
             students.add(student)
         }
@@ -239,6 +277,40 @@ class DatabaseHelper(context: Context) :
     """.trimIndent()
 
         val cursor = db.rawQuery(query, arrayOf(city))
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STUDENT_ID))
+            val subjectName = "SumB"
+            val totalScore = cursor.getInt(cursor.getColumnIndexOrThrow("totalScore"))
+
+            // Giả sử mỗi sinh viên chỉ có một môn học với điểm số cao nhất
+            val subjects = listOf(Subjects(id, subjectName, totalScore))
+            val student = Student(
+                studentId = cursor.getInt(0),
+                firstName = cursor.getString(1),
+                lastName = cursor.getString(2),
+                dateOfBirth = cursor.getString(3),
+                city = cursor.getString(4),
+                phone = cursor.getString(5),
+                subjects = subjects // Lấy danh sách môn học của học sinh
+            )
+            students.add(student)
+        }
+        cursor.close()
+        db.close()
+
+        return students
+    }
+    fun searchStudent(name:String,city: String): List<Student>{
+        val students = mutableListOf<Student>()
+        val db = readableDatabase
+
+        val query = """
+        SELECT *
+        FROM Student s
+        WHERE s.city = ? AND s.firstName = ?
+    """.trimIndent()
+
+        val cursor = db.rawQuery(query, arrayOf(city,name))
         while (cursor.moveToNext()) {
             val student = Student(
                 studentId = cursor.getInt(0),
